@@ -35,5 +35,6 @@
 			</Description>
 		</em:targetApplication>
 		<em:name>[%Description%]</em:name>
+		<em:description>[%Description%]</em:description>
 	</Description>
 </RDF>

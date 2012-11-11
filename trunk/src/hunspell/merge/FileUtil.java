@@ -18,9 +18,9 @@ public class FileUtil {
     outputFolder = currentFolder + addDelimeter("output");
   }
 
-  public static void saveToFile(String buffer, String outputFileName, String outputEncoding) {
+  public static void saveToFile(String buffer, String outputFileName, String outputEncoding)
+      throws IOException {
 
-    try {
       FileOutputStream outputStream = new FileOutputStream(outputFileName);
       Writer out;
       if (outputEncoding == null)
@@ -29,34 +29,27 @@ public class FileUtil {
         out = new OutputStreamWriter(outputStream, outputEncoding);
       out.write(buffer);
       out.close();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 
   public static boolean createFolder(String folderName) {
     return fileExists(folderName) || new File(folderName).mkdirs();
   }
 
-  public static void deleteFolder(String folderName) {
-    deleteRecursive(new File(folderName));
+  public static void deleteFolder(String folderName, boolean deleteFolder) {
+    deleteRecursive(new File(folderName), deleteFolder);
   }
 
-  public static boolean deleteRecursive(File folderName) {
+  public static boolean deleteRecursive(File folderName, boolean deleteFolder) {
 
     if (!folderName.exists())
       return true;
     boolean ret = true;
     if (folderName.isDirectory()) {
       for (File f : folderName.listFiles()) {
-        ret = ret && deleteRecursive(f);
+        ret = ret && deleteRecursive(f, true);
       }
     }
-    return ret && folderName.delete();
+    return ret && (!deleteFolder ||  folderName.delete());
   }
 
   public static boolean delete(String fileName) {
@@ -96,4 +89,13 @@ public class FileUtil {
       }
     });
   }
+
+  public static String getOutputXPIFolder(){
+    return outputFolder + addDelimeter("xpi");
+  }
+
+  public static String validateFileName(String s) {
+    return s.replaceAll("[\\:/<>|?*\"'_]", "-");
+  }
+
 }

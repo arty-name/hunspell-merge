@@ -2,6 +2,7 @@
 
 package hunspell.merge;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
@@ -117,7 +118,8 @@ public class AffReader extends FileReader {
     }
   }
 
-  public void saveToFile(String fileName, AffixFlag flag) {
+  public void saveToFile(String fileName, AffixFlag flag)
+      throws IOException {
     renameAffixes(flag);
     StringBuilder buffer = new StringBuilder();
     buffer.append("SET UTF-8").append(Util.LINE_BREAK);
