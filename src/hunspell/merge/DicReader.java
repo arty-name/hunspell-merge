@@ -2,6 +2,7 @@
 
 package hunspell.merge;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class DicReader extends FileReader {
     this.affReader = affReader;
   }
 
-  public void saveToFile(String fileName, AffixFlag flag) {
+  public void saveToFile(String fileName, AffixFlag flag)
+      throws IOException {
     sort();
     StringBuilder buffer = new StringBuilder();
     buffer.append(strings.size()).append(Util.LINE_BREAK);

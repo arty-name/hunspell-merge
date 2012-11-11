@@ -22,7 +22,11 @@ public class HunspellMerge extends JApplet {
   private JTable table = new JTable(tableModel);
   private JScrollPane scrollPane = new JScrollPane(table);
 
+  private JRadioButton buttonOutPlain = new JRadioButton("Uncompressed (*.dic, *.aff)");
+  private JRadioButton buttonOutXPI = new JRadioButton("XPI FireFox extension (*.xpi)");
+
   private JTextField editOutputName = new JTextField();
+  private JTextField editOutputDescription = new JTextField();
   private JTextField editDicFolder = new JTextField();
   private JButton buttonCompile = new JButton("Merge dictionaries");
   private JButton buttonDicFolder = new JButton("...");
@@ -106,10 +110,42 @@ public class HunspellMerge extends JApplet {
     c.weighty = 0.0;
 
     // Output folder
-    JPanel panelOutDicFolder = new JPanel(new BorderLayout(2, 2));
-    panelOutDicFolder.setBorder(BorderFactory.createTitledBorder("Dictionary output folder"));
+    JPanel panelOutput = new JPanel(new GridBagLayout());
+    panelOutput.setBorder(BorderFactory.createTitledBorder("Dictionary output parameters"));
+    mainFrame.add(panelOutput, c);
+
+    // Button
+    JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+    panelButton.add(buttonCompile);
+    mainFrame.add(panelButton, c);
+
+    // Action button
+    buttonCompile.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        createDictionaries();
+      }
+    }
+    );
+
+    // Output panel
+    c = new GridBagConstraints();
+    c.weightx = 0.0;
+    c.fill = GridBagConstraints.BOTH;
+    c.gridwidth = 1;
+    c.gridx = 0;
+    c.insets = new Insets(2, 2, 2, 2);
+
+    panelOutput.add(new JLabel("Folder"), c);
+
     editOutFolder.setText(FileUtil.outputFolder);
-    panelOutDicFolder.add(editOutFolder, BorderLayout.CENTER);
+    c.weightx = 1.0;
+    c.gridx++;
+    panelOutput.add(editOutFolder, c);
+
+    c.weightx = 0.0;
+    c.gridx++;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+
     buttonOutDicFolder.setToolTipText("Select dictionary output folder");
     buttonOutDicFolder.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -122,31 +158,50 @@ public class HunspellMerge extends JApplet {
       }
     }
     );
-    panelOutDicFolder.add(buttonOutDicFolder, BorderLayout.EAST);
-    mainFrame.add(panelOutDicFolder, c);
+    panelOutput.add(buttonOutDicFolder, c);
 
-    JPanel panelOutName = new JPanel(new BorderLayout(2, 2));
-    panelOutName.setBorder(BorderFactory.createTitledBorder("Output dictionary name (without extension)"));
-    panelOutName.add(editOutputName, BorderLayout.CENTER);
-    mainFrame.add(panelOutName, c);
+    c.gridy = 1;
+    c.gridx = 0;
+    c.weightx = 0.0;
+    c.gridwidth = 1;
+    panelOutput.add(new JLabel("FileName (without extension)"), c);
 
-    // Action button
-    buttonCompile.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        createDictionaries();
-      }
-    }
-    );
+    c.gridwidth = 2;
+    c.gridx++;
 
-    JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
-    panelButton.add(buttonCompile);
-    mainFrame.add(panelButton, c);
+    panelOutput.add(editOutputName, c);
+
+    c.gridy = 2;
+    c.gridx = 0;
+    c.weightx = 0.0;
+    c.gridwidth = 1;
+    panelOutput.add(new JLabel("Description (for FireFox XPI)"), c);
+
+    editOutputDescription.setText("Merged dictionary");
+    c.gridwidth = 2;
+    c.gridx++;
+    panelOutput.add(editOutputDescription, c);
+
+    ButtonGroup group = new ButtonGroup();
+    buttonOutPlain.setSelected(true);
+    group.add(buttonOutPlain);
+    group.add(buttonOutXPI);
+
+    JPanel panelOutputType = new JPanel(new GridLayout(1, 2));
+    panelOutputType.add(buttonOutPlain);
+    panelOutputType.add(buttonOutXPI);
+
+    c.gridy = 3;
+    c.gridwidth = 3;
+    c.gridx = 0;
+    panelOutput.add(panelOutputType, c);
   }
 
   private void createDictionaries() {
     if (selectedDictionaries.size() == 0)
       return;
 
+    FileUtil.deleteFolder(FileUtil.outputFolder, false);
     FileUtil.createFolder(FileUtil.outputFolder);
 
     AffReader outAff = new AffReader();
@@ -159,10 +214,28 @@ public class HunspellMerge extends JApplet {
     }
 
     outAff.removeUnusedAffixes(outDic);
-    outAff.saveToFile(FileUtil.outputFolder + editOutputName.getText() + ".aff", AffixFlag.NUMBER);
-    outDic.saveToFile(FileUtil.outputFolder + editOutputName.getText() + ".dic", AffixFlag.NUMBER);
 
-    XPI.createXPI(FileUtil.outputFolder, editOutputName.getText(), "");
+    String outFolder =
+        (buttonOutXPI.isSelected() ? FileUtil.getOutputXPIFolder() + FileUtil.addDelimeter("dictionaries") :
+            FileUtil.outputFolder);
+
+    FileUtil.createFolder(outFolder);
+
+    String outFileName = FileUtil.validateFileName(editOutputName.getText().toLowerCase());
+    String outName = outFolder + outFileName;
+
+    try {
+      outAff.saveToFile(outName + ".aff", AffixFlag.NUMBER);
+      outDic.saveToFile(outName + ".dic", AffixFlag.NUMBER);
+
+      if (buttonOutXPI.isSelected())
+        XPI.createXPI(outFileName, editOutputDescription.getText());
+
+      JOptionPane.showMessageDialog(this,
+          "Dictionary was successfully created.\n\nOutput folder:\n" + FileUtil.outputFolder);
+    } catch (Exception e) {
+      Util.showError(e);
+    }
   }
 
   private void updateSelectedDictionaries() {

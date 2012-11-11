@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
 
@@ -34,8 +35,7 @@ public class ZipUtil {
       } finally {
         zipFile.close();
       }
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IOException ignored) {
     }
     return null;
   }
@@ -74,8 +74,41 @@ public class ZipUtil {
         zipFile.close();
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      Util.showError(e);
     }
     return result;
+  }
+
+  private static void zipFolderImpl(ZipOutputStream outputStream, File sourceFile, String ignoreFile, String folder)
+      throws IOException {
+    File[] files = sourceFile.listFiles();
+    for (File file : files) {
+      if (file.getPath().equals(ignoreFile))
+        continue;
+      if (file.isDirectory()) {
+        zipFolderImpl(outputStream, file, "", folder + "/" + file.getName());
+        continue;
+      }
+
+      byte[] buffer = new byte[1024];
+      FileInputStream inputStream = new FileInputStream(file);
+      outputStream.putNextEntry(new ZipEntry(folder + file.getName()));
+      int length;
+      while ((length = inputStream.read(buffer)) > 0) {
+        outputStream.write(buffer, 0, length);
+      }
+      outputStream.closeEntry();
+      inputStream.close();
+    }
+  }
+
+  public static void zipFolder(String zipFileName, String zipFolder)
+      throws IOException {
+    ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(zipFileName));
+    try {
+      zipFolderImpl(outputStream, new File(zipFolder), zipFileName, "");
+    } finally {
+      outputStream.close();
+    }
   }
 }
