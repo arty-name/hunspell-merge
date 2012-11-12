@@ -269,7 +269,7 @@ public class HunspellMerge extends JApplet {
 
     String result = "";
     for (DictionaryFile dictionary : selectedDictionaries) {
-      result += (result.equals("") ? "" : "_") + (dictionary.getNameNoExt());
+      result += (result.equals("") ? "" : "_") + (dictionary.getLaguageID());
     }
 
     // Remove language duplicates

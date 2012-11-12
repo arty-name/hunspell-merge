@@ -13,7 +13,11 @@ public abstract class FileReader {
     // Decode file and process each line
     try {
       FileInputStream inputStream = new FileInputStream(in);
-      InputStreamReader inputReader = new InputStreamReader(inputStream, cs);
+      InputStreamReader inputReader;
+      if (cs == null)
+        inputReader = new InputStreamReader(inputStream);
+      else
+        inputReader = new InputStreamReader(inputStream, cs);
 
       BufferedReader bufferedReader = new BufferedReader(inputReader);
       start();

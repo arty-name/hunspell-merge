@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 public class DictionaryFile extends File {
 
-  private String nameNoExt;
+  private String laguageID;
   private String affName;
   private String dicName;
   private DictionaryType type;
@@ -19,36 +19,43 @@ public class DictionaryFile extends File {
   public DictionaryFile(File file) {
     super(file.getPath());
     type = DictionaryType.parse(file.getName());
-    nameNoExt = FileUtil.changeFileExt(getName(), "");
-    affName = type.isArchive() ? ZipUtil.containsFile(getPath(), ".aff") : getPath();
+    affName = new File(type.isArchive() ? ZipUtil.containsFile(getPath(), ".aff") : getPath()).getName();
+
+    FileUtil.createFolder(getTempFolder());
 
     affFile = extractAffFile();
     // Detect charset
     affReader.setChartSetReader(true);
-    affReader.readFile(affFile, Charset.defaultCharset());
+    affReader.readFile(affFile, Charset.forName("UTF-8"));
     affReader.setChartSetReader(false);
 
-    dicName = type.isArchive() ? ZipUtil.containsFile(getPath(), ".dic") : getPath();
+    dicName = new File(type.isArchive() ? ZipUtil.containsFile(getPath(), ".dic") : getPath()).getName();
     dicFile = extractDicFile();
     dicReader.setAffReader(affReader);
 
+    if (isValid())
+    laguageID = FileUtil.changeFileExt(dicName, "");
   }
 
   public boolean isValid() {
-    return !type.isArchive() || (dicFile.exists());
+    return (dicFile.exists());
   }
 
-  public String getNameNoExt() {
-    return nameNoExt;
+  public String getLaguageID() {
+    return laguageID;
+  }
+
+  private String getTempFolder(){
+    return FileUtil.makePath(FileUtil.tempFolder, getName());
   }
 
   public File extractDicFile() {
     if (!type.isArchive())
       return this;
 
-    File result = new File(FileUtil.tempFolder + dicName);
+    File result = new File(getTempFolder() + dicName);
     if (!result.exists())
-      ZipUtil.unzip(getPath(), FileUtil.tempFolder, ".dic");
+      ZipUtil.unzip(getPath(), getTempFolder(), ".dic");
 
     return result;
   }
@@ -57,9 +64,9 @@ public class DictionaryFile extends File {
     if (!type.isArchive())
       return new File(FileUtil.changeFileExt(getPath(), ".aff"));
 
-    File result = new File(FileUtil.tempFolder + affName);
+    File result = new File(getTempFolder() + affName);
     if (!result.exists())
-      ZipUtil.unzip(getPath(), FileUtil.tempFolder, ".aff");
+      ZipUtil.unzip(getPath(), getTempFolder(), ".aff");
 
     return result;
   }

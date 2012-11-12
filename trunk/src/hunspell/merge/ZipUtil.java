@@ -28,7 +28,6 @@ public class ZipUtil {
         Enumeration entries = zipFile.entries();
         while (entries.hasMoreElements()) {
           ZipEntry entry = (ZipEntry) entries.nextElement();
-
           if (!entry.isDirectory() && entry.getName().toLowerCase().endsWith(ext))
             return entry.getName();
         }
