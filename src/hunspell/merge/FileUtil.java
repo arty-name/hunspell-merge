@@ -95,7 +95,7 @@ public class FileUtil {
   }
 
   public static String validateFileName(String s) {
-    return s.replaceAll("[\\:/<>|?*\"'_]", "-");
+    return s.replaceAll("[\\:/<>|?*\"'-]", "_");
   }
 
   public static void createTempFolder() {

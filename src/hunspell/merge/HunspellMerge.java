@@ -164,11 +164,11 @@ public class HunspellMerge extends JApplet {
     c.gridx = 0;
     c.weightx = 0.0;
     c.gridwidth = 1;
-    panelOutput.add(new JLabel("FileName (without extension)"), c);
+    panelOutput.add(new JLabel("Language ID"), c);
 
     c.gridwidth = 2;
     c.gridx++;
-
+    editOutputName.setToolTipText("<html>Examples:<br>en_US_ru_RU<br>en_ru<br>en_ru_de</html>");
     panelOutput.add(editOutputName, c);
 
     c.gridy = 2;
@@ -224,7 +224,7 @@ public class HunspellMerge extends JApplet {
       outDic.saveToFile(outFolder + outFileName + ".dic", AffixFlag.NUMBER);
 
       if (buttonOutXPI.isSelected())
-        XPI.createXPI(outFileName, editOutputDescription.getText());
+        XPI.createXPI(outFileName.replace("_", "-"), editOutputDescription.getText());
 
       JOptionPane.showMessageDialog(this,
           "Dictionary was successfully created.\n\nOutput folder:\n" + FileUtil.outputFolder);
@@ -246,8 +246,16 @@ public class HunspellMerge extends JApplet {
   private void updateNewName() {
 
     String result = "";
-    for (int i = 0; i < selectedDictionaries.size(); i++) {
-      result += (selectedDictionaries.elementAt(i).getNameNoExt()) + ((i < selectedDictionaries.size() - 1) ? "_" : "");
+    for (DictionaryFile dictionary : selectedDictionaries) {
+      result += (result.equals("") ? "" : "_") + (dictionary.getNameNoExt());
+    }
+
+    // Remove language duplicates
+    String[] tokens = result.replace("-", "_").split("_");
+    result = "";
+    for (String token : tokens) {
+      if (!result.contains(token))
+        result += (result.equals("") ? "" : "_") + token;
     }
 
     editOutputName.setText(result);
