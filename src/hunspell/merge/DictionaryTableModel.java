@@ -19,7 +19,7 @@ public class DictionaryTableModel extends AbstractTableModel {
     columnNames = new String[] {
         "Name",
         "Type",
-        "Encoding"};
+        "Language (Encoding)"};
   }
 
   public int getColumnCount() {
@@ -43,7 +43,7 @@ public class DictionaryTableModel extends AbstractTableModel {
       case COLUMN_TYPE:
         return file.getType().getName();
       case COLUMN_ENCODING:
-        return file.getCharset();
+        return file.getLaguageID() + " (" +  file.getCharset() + ")";
     }
     return null;
   }

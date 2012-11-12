@@ -15,7 +15,7 @@ public class AffReader extends FileReader {
   private AffixFlag flag = AffixFlag.SINGLE;
   private String tryStr = "";
   private Charset charset = Charset.defaultCharset();
-  private Pattern patternSet = Pattern.compile("SET (.*) *");
+  private Pattern patternSet = Pattern.compile(".*SET (.*) *");
   private Pattern patternTry = Pattern.compile("TRY (.*) *");
   private Pattern patternFlag = Pattern.compile("FLAG (.*) *");
   private Vector<Affix> affixes = new Vector<Affix>();
