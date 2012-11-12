@@ -22,8 +22,8 @@ public class HunspellMerge extends JApplet {
   private DictionaryTableModel tableModel = new DictionaryTableModel(dictionaries);
   private JTable table = new JTable(tableModel);
   private JScrollPane scrollPane = new JScrollPane(table);
-
   private JRadioButton buttonOutPlain = new JRadioButton("Dictionary (*.dic, *.aff)");
+  private JRadioButton buttonOutZIP = new JRadioButton("ZIP Archive (*.zip)");
   private JRadioButton buttonOutXPI = new JRadioButton("XPInstall (*.xpi)");
 
   private JTextField editOutputName = new JTextField();
@@ -80,6 +80,7 @@ public class HunspellMerge extends JApplet {
     JPanel panelDicFolder = new JPanel(new BorderLayout(2, 2));
     panelDicFolder.setBorder(BorderFactory.createTitledBorder("Dictionary source folder"));
     editDicFolder.setText(FileUtil.dictionaryFolder);
+    editDicFolder.setEditable(false);
     panelDicFolder.add(editDicFolder, BorderLayout.CENTER);
     buttonDicFolder.setToolTipText("Select dictionary source folder");
     buttonDicFolder.addActionListener(new ActionListener() {
@@ -162,6 +163,7 @@ public class HunspellMerge extends JApplet {
     panelOutput.add(new JLabel("Folder"), c);
 
     editOutFolder.setText(FileUtil.outputFolder);
+    editOutFolder.setEditable(false);
     c.weightx = 1.0;
     c.gridx++;
     panelOutput.add(editOutFolder, c);
@@ -208,10 +210,12 @@ public class HunspellMerge extends JApplet {
     ButtonGroup group = new ButtonGroup();
     buttonOutPlain.setSelected(true);
     group.add(buttonOutPlain);
+    group.add(buttonOutZIP);
     group.add(buttonOutXPI);
 
     JPanel panelOutputType = new JPanel(new GridLayout(1, 2));
     panelOutputType.add(buttonOutPlain);
+    panelOutputType.add(buttonOutZIP);
     panelOutputType.add(buttonOutXPI);
 
     c.gridy = 3;
@@ -236,7 +240,7 @@ public class HunspellMerge extends JApplet {
     FileUtil.createTempFolder();
     FileUtil.createOutputFolder();
 
-    String outFolder = !buttonOutXPI.isSelected() ? FileUtil.outputFolder :
+    String outFolder = buttonOutPlain.isSelected() ? FileUtil.outputFolder :
         FileUtil.makePath(FileUtil.tempFolder, "dictionaries");
     String outFileName = FileUtil.validateFileName(editOutputName.getText().toLowerCase());
 
@@ -246,6 +250,8 @@ public class HunspellMerge extends JApplet {
 
       if (buttonOutXPI.isSelected())
         XPI.createXPI(outFileName.replace("_", "-"), editOutputDescription.getText());
+      if (buttonOutZIP.isSelected())
+        ZipUtil.zipFolder(FileUtil.outputFolder + outFileName.replace("_", "-") + ".zip", outFolder);
 
       JOptionPane.showMessageDialog(this,
           "Dictionaries were successfully merged.\n\nOutput folder:\n" + FileUtil.outputFolder);
