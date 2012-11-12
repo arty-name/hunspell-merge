@@ -84,7 +84,7 @@ public class ZipUtil {
     File[] files = sourceFile.listFiles();
     for (File file : files) {
       if (file.isDirectory()) {
-        zipFolderImpl(outputStream, file, folder + "/" + file.getName());
+        zipFolderImpl(outputStream, file, folder + file.getName() + "/");
         continue;
       }
 

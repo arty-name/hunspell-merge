@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URI;
 import java.util.Vector;
 
 public class HunspellMerge extends JApplet {
@@ -28,6 +29,7 @@ public class HunspellMerge extends JApplet {
   private JTextField editOutputName = new JTextField();
   private JTextField editOutputDescription = new JTextField();
   private JTextField editDicFolder = new JTextField();
+  private JButton buttonDownload = new JButton("Download more dictionaries");
   private JButton buttonCompile = new JButton("Merge dictionaries");
   private JButton buttonDicFolder = new JButton("...");
   private JButton buttonOutDicFolder = new JButton("...");
@@ -46,11 +48,11 @@ public class HunspellMerge extends JApplet {
     createGUI();
 
     mainFrame.setVisible(true);
-    FileUtil.createTempFolder();
     loadDictionaries();
   }
 
   private void loadDictionaries() {
+    FileUtil.createTempFolder();
     dictionaries.clear();
 
     File[] files = FileUtil.findFiles(FileUtil.dictionaryFolder, DictionaryType.getAllExts());
@@ -108,6 +110,28 @@ public class HunspellMerge extends JApplet {
     mainFrame.add(scrollPane, c);
 
     c.weighty = 0.0;
+
+    //
+
+    buttonDownload.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (Desktop.isDesktopSupported()) {
+          try {
+            Desktop.getDesktop().browse(new URI("https://code.google.com/p/hunspell-merge/wiki/OnlineDictionaries"));
+          } catch (Exception e1) {
+            Util.showError(e1);
+          }
+        }
+      }
+    });
+
+    c.weightx = 0;
+    c.anchor = GridBagConstraints.EAST;
+    c.fill = GridBagConstraints.NONE;
+    mainFrame.add(buttonDownload, c);
+
+    c.fill = GridBagConstraints.BOTH;
+    c.anchor = GridBagConstraints.WEST;
 
     // Output folder
     JPanel panelOutput = new JPanel(new GridBagLayout());
@@ -200,8 +224,6 @@ public class HunspellMerge extends JApplet {
   private void createDictionaries() {
     if (selectedDictionaries.size() == 0)
       return;
-
-    FileUtil.createTempFolder();
 
     AffReader outAff = new AffReader();
     DicReader outDic = new DicReader();
