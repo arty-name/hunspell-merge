@@ -5,7 +5,7 @@ package hunspell.merge;
 public enum DictionaryType {
 
   PLAIN("Dictionary", ".dic"),
-  ZIP("ZIP", ".zip"),
+  ZIP("ZIP Archive", ".zip"),
   OXT("OpenOffice", ".oxt"),
   XPI("XPInstall", ".xpi");
   private String name;
