@@ -201,7 +201,6 @@ public class HunspellMerge extends JApplet {
     c.gridwidth = 1;
     panelOutput.add(new JLabel("XPInstall Description"), c);
 
-    editOutputDescription.setText("Merged dictionary");
     c.gridwidth = 2;
     c.gridx++;
     panelOutput.add(editOutputDescription, c);
@@ -281,6 +280,7 @@ public class HunspellMerge extends JApplet {
     }
 
     editOutputName.setText(result);
+    editOutputDescription.setText("Merged [" + result + "] dictionary");
   }
 
   @Override
