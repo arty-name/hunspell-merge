@@ -12,15 +12,15 @@ public class FileUtil {
   public static String outputFolder;
 
   static {
-    currentFolder = addDelimeter(System.getProperty("user.dir"));
-    tempFolder = addDelimeter(System.getProperty("java.io.tmpdir"));
-    dictionaryFolder = currentFolder + addDelimeter("dictionaries");
-    outputFolder = currentFolder + addDelimeter("output");
+    currentFolder = makePath(System.getProperty("user.dir"));
+    tempFolder = makePath(System.getProperty("java.io.tmpdir"), "HunspellMerge");
+    dictionaryFolder = makePath(currentFolder, "dictionaries");
+    outputFolder = makePath(currentFolder, "output");
   }
 
   public static void saveToFile(String buffer, String outputFileName, String outputEncoding)
       throws IOException {
-
+      createFolder(new File(outputFileName).getParent());
       FileOutputStream outputStream = new FileOutputStream(outputFileName);
       Writer out;
       if (outputEncoding == null)
@@ -69,8 +69,12 @@ public class FileUtil {
     }
   }
 
-  public static String addDelimeter(String path) {
-    return path.endsWith(pathDelimeter()) ? path : path + pathDelimeter();
+  public static String makePath(String... paths) {
+    String result = "";
+    for (String path : paths) {
+      result += path.endsWith(pathDelimeter()) ? path : path + pathDelimeter();
+    }
+    return result;
   }
 
   public static String pathDelimeter() {
@@ -90,12 +94,16 @@ public class FileUtil {
     });
   }
 
-  public static String getOutputXPIFolder(){
-    return outputFolder + addDelimeter("xpi");
-  }
-
   public static String validateFileName(String s) {
     return s.replaceAll("[\\:/<>|?*\"'_]", "-");
   }
 
+  public static void createTempFolder() {
+    deleteFolder(tempFolder, false);
+    createFolder(tempFolder);
+  }
+
+  public static void createOutputFolder() {
+    createFolder(outputFolder);
+  }
 }

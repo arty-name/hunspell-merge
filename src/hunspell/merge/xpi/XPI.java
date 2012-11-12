@@ -28,7 +28,7 @@ public class XPI {
       throws IOException {
     String resource = readResource(resourceName);
     resource = resource.replace("[%Description%]", description).replace("[%FileName%]", fileName);
-    FileUtil.saveToFile(resource, FileUtil.getOutputXPIFolder() + resourceName, null);
+    FileUtil.saveToFile(resource, FileUtil.tempFolder + resourceName, null);
   }
 
   public static void createXPI(String fileName, String description)
@@ -36,7 +36,6 @@ public class XPI {
     saveResource("install.rdf", fileName, description);
     saveResource("install.js", fileName, description);
 
-    ZipUtil.zipFolder(FileUtil.outputFolder + fileName + ".xpi", FileUtil.getOutputXPIFolder());
-    FileUtil.deleteFolder(FileUtil.getOutputXPIFolder(), true);
+    ZipUtil.zipFolder(FileUtil.outputFolder + fileName + ".xpi", FileUtil.tempFolder);
   }
 }
