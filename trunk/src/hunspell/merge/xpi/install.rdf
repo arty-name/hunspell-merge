@@ -6,6 +6,12 @@
 		<em:version>1.0</em:version>
 		<em:type>64</em:type>
 		<em:unpack>true</em:unpack>
+		<em:creator>Hunspell Merge Utility</em:creator>
+		<em:name>[%Description%]</em:name>
+		<em:description>[%Description%]</em:description>
+		<em:homepageURL>https://code.google.com/p/hunspell-merge/</em:homepageURL>
+
+    <!-- Fennec -->
 		<em:targetApplication>
 			<Description>
 				<em:id>{20aa4150-b5f4-11de-8a39-0800200c9a66}</em:id>
@@ -13,6 +19,8 @@
 				<em:maxVersion>*.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
+
+		<!-- Firefox -->
 		<em:targetApplication>
 			<Description>
 				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
@@ -20,6 +28,8 @@
 				<em:maxVersion>*.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
+
+		<!-- Thunderbird -->
 		<em:targetApplication>
 			<Description>
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
@@ -27,6 +37,8 @@
 				<em:maxVersion>*.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
+
+		<!-- SeaMonkey -->
 		<em:targetApplication>
 			<Description>
 				<em:id>{92650c4d-4b8e-4d2a-b7eb-24ecf4f6b63a}</em:id>
@@ -34,7 +46,6 @@
 				<em:maxVersion>*.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
-		<em:name>[%Description%]</em:name>
-		<em:description>[%Description%]</em:description>
+
 	</Description>
 </RDF>

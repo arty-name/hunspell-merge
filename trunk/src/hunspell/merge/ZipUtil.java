@@ -63,7 +63,7 @@ public class ZipUtil {
           }
 
           if (isValidExt) {
-            String outFileName = FileUtil.addDelimeter(unZipFolder) + new File(entry.getName()).getName();
+            String outFileName = FileUtil.makePath(unZipFolder) + new File(entry.getName()).getName();
             FileUtil.delete(outFileName);
             copyInputStream(zipFile.getInputStream(entry),
                 new BufferedOutputStream(new FileOutputStream(outFileName)));
@@ -79,14 +79,12 @@ public class ZipUtil {
     return result;
   }
 
-  private static void zipFolderImpl(ZipOutputStream outputStream, File sourceFile, String ignoreFile, String folder)
+  private static void zipFolderImpl(ZipOutputStream outputStream, File sourceFile, String folder)
       throws IOException {
     File[] files = sourceFile.listFiles();
     for (File file : files) {
-      if (file.getPath().equals(ignoreFile))
-        continue;
       if (file.isDirectory()) {
-        zipFolderImpl(outputStream, file, "", folder + "/" + file.getName());
+        zipFolderImpl(outputStream, file, folder + "/" + file.getName());
         continue;
       }
 
@@ -106,7 +104,7 @@ public class ZipUtil {
       throws IOException {
     ZipOutputStream outputStream = new ZipOutputStream(new FileOutputStream(zipFileName));
     try {
-      zipFolderImpl(outputStream, new File(zipFolder), zipFileName, "");
+      zipFolderImpl(outputStream, new File(zipFolder), "");
     } finally {
       outputStream.close();
     }

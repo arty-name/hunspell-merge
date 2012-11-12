@@ -46,11 +46,11 @@ public class HunspellMerge extends JApplet {
     createGUI();
 
     mainFrame.setVisible(true);
+    FileUtil.createTempFolder();
     loadDictionaries();
   }
 
   private void loadDictionaries() {
-    FileUtil.createFolder(FileUtil.tempFolder);
     dictionaries.clear();
 
     File[] files = FileUtil.findFiles(FileUtil.dictionaryFolder, DictionaryType.getAllExts());
@@ -85,7 +85,7 @@ public class HunspellMerge extends JApplet {
         JFileChooser fileChooser = new JFileChooser(FileUtil.dictionaryFolder);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-          FileUtil.dictionaryFolder = FileUtil.addDelimeter(fileChooser.getSelectedFile().getPath());
+          FileUtil.dictionaryFolder = FileUtil.makePath(fileChooser.getSelectedFile().getPath());
           editDicFolder.setText(FileUtil.dictionaryFolder);
           loadDictionaries();
         }
@@ -152,7 +152,7 @@ public class HunspellMerge extends JApplet {
         JFileChooser fileChooser = new JFileChooser(FileUtil.outputFolder);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fileChooser.showOpenDialog(mainFrame) == JFileChooser.APPROVE_OPTION) {
-          FileUtil.outputFolder = FileUtil.addDelimeter(fileChooser.getSelectedFile().getPath());
+          FileUtil.outputFolder = FileUtil.makePath(fileChooser.getSelectedFile().getPath());
           editOutFolder.setText(FileUtil.outputFolder);
         }
       }
@@ -201,32 +201,27 @@ public class HunspellMerge extends JApplet {
     if (selectedDictionaries.size() == 0)
       return;
 
-    FileUtil.deleteFolder(FileUtil.outputFolder, false);
-    FileUtil.createFolder(FileUtil.outputFolder);
+    FileUtil.createTempFolder();
 
     AffReader outAff = new AffReader();
     DicReader outDic = new DicReader();
-
     for (DictionaryFile dictionary : selectedDictionaries) {
       dictionary.readFiles();
       outAff.appendAff(dictionary.affReader);
       outDic.appendDic(dictionary.dicReader);
     }
-
     outAff.removeUnusedAffixes(outDic);
 
-    String outFolder =
-        (buttonOutXPI.isSelected() ? FileUtil.getOutputXPIFolder() + FileUtil.addDelimeter("dictionaries") :
-            FileUtil.outputFolder);
+    FileUtil.createTempFolder();
+    FileUtil.createOutputFolder();
 
-    FileUtil.createFolder(outFolder);
-
+    String outFolder = !buttonOutXPI.isSelected() ? FileUtil.outputFolder :
+        FileUtil.makePath(FileUtil.tempFolder, "dictionaries");
     String outFileName = FileUtil.validateFileName(editOutputName.getText().toLowerCase());
-    String outName = outFolder + outFileName;
 
     try {
-      outAff.saveToFile(outName + ".aff", AffixFlag.NUMBER);
-      outDic.saveToFile(outName + ".dic", AffixFlag.NUMBER);
+      outAff.saveToFile(outFolder + outFileName + ".aff", AffixFlag.NUMBER);
+      outDic.saveToFile(outFolder + outFileName + ".dic", AffixFlag.NUMBER);
 
       if (buttonOutXPI.isSelected())
         XPI.createXPI(outFileName, editOutputDescription.getText());
@@ -236,6 +231,8 @@ public class HunspellMerge extends JApplet {
     } catch (Exception e) {
       Util.showError(e);
     }
+
+    FileUtil.deleteFolder(FileUtil.tempFolder, true);
   }
 
   private void updateSelectedDictionaries() {
