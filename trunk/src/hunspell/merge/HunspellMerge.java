@@ -23,13 +23,13 @@ public class HunspellMerge extends JApplet {
   private JTable table = new JTable(tableModel);
   private JScrollPane scrollPane = new JScrollPane(table);
 
-  private JRadioButton buttonOutPlain = new JRadioButton("Uncompressed (*.dic, *.aff)");
-  private JRadioButton buttonOutXPI = new JRadioButton("XPI FireFox extension (*.xpi)");
+  private JRadioButton buttonOutPlain = new JRadioButton("Dictionary (*.dic, *.aff)");
+  private JRadioButton buttonOutXPI = new JRadioButton("XPInstall (*.xpi)");
 
   private JTextField editOutputName = new JTextField();
   private JTextField editOutputDescription = new JTextField();
   private JTextField editDicFolder = new JTextField();
-  private JButton buttonDownload = new JButton("Download more dictionaries");
+  private JButton buttonDownload = new JButton("Browse and download more dictionaries");
   private JButton buttonCompile = new JButton("Merge dictionaries");
   private JButton buttonDicFolder = new JButton("...");
   private JButton buttonOutDicFolder = new JButton("...");
@@ -199,7 +199,7 @@ public class HunspellMerge extends JApplet {
     c.gridx = 0;
     c.weightx = 0.0;
     c.gridwidth = 1;
-    panelOutput.add(new JLabel("Description (for FireFox XPI)"), c);
+    panelOutput.add(new JLabel("XPInstall Description"), c);
 
     editOutputDescription.setText("Merged dictionary");
     c.gridwidth = 2;
@@ -249,7 +249,7 @@ public class HunspellMerge extends JApplet {
         XPI.createXPI(outFileName.replace("_", "-"), editOutputDescription.getText());
 
       JOptionPane.showMessageDialog(this,
-          "Dictionary was successfully created.\n\nOutput folder:\n" + FileUtil.outputFolder);
+          "Dictionaries were successfully merged.\n\nOutput folder:\n" + FileUtil.outputFolder);
     } catch (Exception e) {
       Util.showError(e);
     }

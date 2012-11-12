@@ -5,9 +5,9 @@ package hunspell.merge;
 public enum DictionaryType {
 
   PLAIN("Dictionary", ".dic"),
-  ZIP("ZIP Archive", ".zip"),
-  OXT("OpenOffice package", ".oxt"),
-  XPI("FireFox extension", ".xpi");
+  ZIP("ZIP", ".zip"),
+  OXT("OpenOffice", ".oxt"),
+  XPI("XPInstall", ".xpi");
   private String name;
 
   private String ext;
