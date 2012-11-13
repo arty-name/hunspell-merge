@@ -1,0 +1,79 @@
+﻿<project name="hunspellmerge" default="build.run" basedir=".">
+	<!-- $Id: build.xml 4735 2012-10-25 07:17:02Z maltsev $ -->
+
+	<property name="dir.bin" value=".bin"/>
+	<property name="dir.src" value="src"/>
+	<property name="dir.temp" value=".tmp"/>
+	<property name="jar.file" value="HunspellMerge.jar"/>
+	<property name="jar.path" value="${dir.bin}/${jar.file}"/>
+	<property name="version" value="1.0"/>
+	<property name="mainclass" value="hunspell.merge.HunspellMerge"/>
+
+	<target name="clean">
+		<delete dir="${dir.temp}"/>
+		<delete dir="${dir.bin}"/>
+	</target>
+
+	<target name="sign" description="Sighs jar">
+		<signjar jar="${jar.path}"
+						 alias="hunspellmerge"
+						 storepass="hunspellmerge"
+						 keypass="hunspellmerge"
+						 keystore="etc/cert/hunspellmerge.jks"
+						 signedjar="${jar.path}"
+						 preservelastmodified="true">
+		</signjar>
+	</target>
+
+	<target name="compile" description="Compile project">
+		<mkdir dir="${dir.temp}"/>
+		<javac optimize="on"
+					 srcdir="${dir.src}"
+					 deprecation="on"
+					 destdir="${dir.temp}"
+					 debug="true"
+					 nowarn="no"
+					 debuglevel="source,lines"
+					 target="1.6"
+					 source="1.6"
+					 includeantruntime="false">
+		</javac>
+		<copy todir="${dir.temp}" preservelastmodified="true">
+			<fileset dir="${dir.src}"
+							 includes="**/*.js,**/*.rdf"/>
+		</copy>
+	</target>
+
+	<target name="jar" description="Build jar">
+		<mkdir dir="${dir.bin}"/>
+		<jar destfile="${jar.path}"
+				 includes="**/*"
+				 basedir="${dir.temp}">
+			<manifest>
+				<attribute name="Main-Class" value="${mainclass}"/>
+				<attribute name="Created-By" value="Sergio Barbery"/>
+				<attribute name="Specification-Title" value="Hunspell Merge"/>
+				<attribute name="Specification-Vendor" value="Sergio Barbery"/>
+				<attribute name="Specification-Version" value="${version}"/>
+				<attribute name="Implementation-Title" value="Hunspell Merge"/>
+				<attribute name="Implementation-Vendor" value="Sergio Barbery"/>
+				<attribute name="Implementation-Version" value="${version}"/>
+			</manifest>
+		</jar>
+		<delete dir="${dir.temp}"/>
+	</target>
+
+	<target name="build" depends="clean, compile, jar, sign" description="Compile project and build signed jar">
+		<copy todir="${dir.bin}" preservelastmodified="true">
+			<fileset dir="etc/run"
+							 includes="**/*"/>
+		</copy>
+	</target>
+
+	<target name="run" description="Run compiled jar">
+	   <java classpath="${jar.path}" classname="${mainclass}" fork="true"/>
+	</target>
+
+	<target name="build.run" depends="build, run" description="Build jar and run it"/>
+
+</project>
