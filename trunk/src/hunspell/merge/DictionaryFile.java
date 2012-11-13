@@ -3,6 +3,7 @@
 package hunspell.merge;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class DictionaryFile extends File {
@@ -19,33 +20,39 @@ public class DictionaryFile extends File {
   public DictionaryFile(File file) {
     super(file.getPath());
     type = DictionaryType.parse(file.getName());
-    affName = new File(type.isArchive() ? ZipUtil.containsFile(getPath(), ".aff") : getPath()).getName();
+    affName = type.isArchive() ? ZipUtil.containsFile(getPath(), ".aff") : getPath();
+    if (affName != null)
+      affName = new File(affName).getName();
 
     FileUtil.createFolder(getTempFolder());
 
     affFile = extractAffFile();
+    if (affFile != null) {
     // Detect charset
     affReader.setChartSetReader(true);
     affReader.readFile(affFile, Charset.forName("UTF-8"));
     affReader.setChartSetReader(false);
+    }
 
-    dicName = new File(type.isArchive() ? ZipUtil.containsFile(getPath(), ".dic") : getPath()).getName();
+    dicName = type.isArchive() ? ZipUtil.containsFile(getPath(), ".dic") : getPath();
+    if (dicName != null)
+      dicName = new File(dicName).getName();
     dicFile = extractDicFile();
     dicReader.setAffReader(affReader);
 
     if (isValid())
-    laguageID = FileUtil.changeFileExt(dicName, "");
+      laguageID = FileUtil.changeFileExt(dicName, "");
   }
 
   public boolean isValid() {
-    return (dicFile.exists());
+    return (dicFile != null) && (dicFile.exists());
   }
 
   public String getLaguageID() {
     return laguageID;
   }
 
-  private String getTempFolder(){
+  private String getTempFolder() {
     return FileUtil.makePath(FileUtil.tempFolder, getName());
   }
 
@@ -55,7 +62,11 @@ public class DictionaryFile extends File {
 
     File result = new File(getTempFolder() + dicName);
     if (!result.exists())
-      ZipUtil.unzip(getPath(), getTempFolder(), ".dic");
+      try {
+        ZipUtil.unzip(getPath(), getTempFolder(), ".dic");
+      } catch (IOException e) {
+        return null;
+      }
 
     return result;
   }
@@ -66,7 +77,11 @@ public class DictionaryFile extends File {
 
     File result = new File(getTempFolder() + affName);
     if (!result.exists())
-      ZipUtil.unzip(getPath(), getTempFolder(), ".aff");
+      try {
+        ZipUtil.unzip(getPath(), getTempFolder(), ".aff");
+      } catch (IOException e) {
+        return null;
+      }
 
     return result;
   }
@@ -79,7 +94,7 @@ public class DictionaryFile extends File {
     return type;
   }
 
-  public void readFiles(){
+  public void readFiles() {
     affReader.readFile(affFile, getCharset());
     dicReader.readFile(dicFile, getCharset());
   }

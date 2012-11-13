@@ -39,9 +39,9 @@ public class ZipUtil {
     return null;
   }
 
-  public static boolean unzip(String zipFileName, String unZipFolder, String... ext) {
+  public static boolean unzip(String zipFileName, String unZipFolder, String... ext)
+      throws IOException {
     boolean result = false;
-    try {
       ZipFile zipFile = new ZipFile(zipFileName);
       try {
         Enumeration entries = zipFile.entries();
@@ -72,9 +72,6 @@ public class ZipUtil {
       } finally {
         zipFile.close();
       }
-    } catch (IOException e) {
-      Util.showError(e);
-    }
     return result;
   }
 
