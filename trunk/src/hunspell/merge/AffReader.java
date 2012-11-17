@@ -165,4 +165,14 @@ public class AffReader extends FileReader {
         affixes.remove(affix);
     }
   }
+
+  public void clear() {
+    affixes.clear();
+    affixHash.clear();
+
+  }
+
+  public int getAffCount() {
+    return affixes.size();
+  }
 }

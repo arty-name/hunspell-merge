@@ -43,7 +43,7 @@ public class DictionaryTableModel extends AbstractTableModel {
       case COLUMN_TYPE:
         return file.getType().getName();
       case COLUMN_ENCODING:
-        return file.getLaguageID() + " (" +  file.getCharset() + ")";
+        return file.getSummary();
     }
     return null;
   }

@@ -1,12 +1,12 @@
 ﻿<project name="hunspellmerge" default="build.run" basedir=".">
 	<!-- $Id: build.xml 4735 2012-10-25 07:17:02Z maltsev $ -->
 
+	<property name="version" value="1.1"/>
 	<property name="dir.bin" value=".bin"/>
 	<property name="dir.src" value="src"/>
 	<property name="dir.temp" value=".tmp"/>
 	<property name="jar.file" value="HunspellMerge.jar"/>
 	<property name="jar.path" value="${dir.bin}/${jar.file}"/>
-	<property name="version" value="1.0"/>
 	<property name="mainclass" value="hunspell.merge.HunspellMerge"/>
 
 	<target name="clean">
