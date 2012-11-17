@@ -14,9 +14,14 @@ public class DicReader extends FileReader {
   private Vector<DicString> strings = new Vector<DicString>();
   private HashMap<String, DicString> hash = new HashMap<String, DicString>();
 
-  public void addString(DicString dicString) {
-    strings.add(dicString);
-    hash.put(dicString.getValue(), dicString);
+  public void addString(DicString string) {
+    strings.add(string);
+    hash.put(string.getValue(), string);
+  }
+
+  private void removeString(DicString string) {
+    strings.remove(string);
+    hash.remove(string);
   }
 
   @Override
@@ -46,16 +51,23 @@ public class DicReader extends FileReader {
       buffer.append(str.toString(flag)).append(Util.LINE_BREAK);
     }
     FileUtil.saveToFile(buffer.toString(), fileName, "UTF-8");
+    buffer.setLength(0);
   }
 
   public void appendDic(DicReader dicReader) {
     for (DicString dicString : dicReader.strings) {
-      if (!hash.containsKey(dicString.getValue()))
+      DicString existing = hash.get(dicString.getValue());
+      if (existing != null) {
+        if (existing.getAffixCount() < dicString.getAffixCount()) {
+          removeString(existing);
+          addString(dicString);
+        }
+      } else
         addString(dicString);
     }
   }
 
-  public void sort(){
+  public void sort() {
     Collections.sort(strings, new Comparator<DicString>() {
       public int compare(DicString o1, DicString o2) {
         return o1.getValue().compareTo(o2.getValue());
@@ -65,6 +77,15 @@ public class DicReader extends FileReader {
 
   public Vector<DicString> getStrings() {
     return strings;
+  }
+
+  public void clear() {
+    strings.clear();
+    hash.clear();
+  }
+
+  public int getWordCount() {
+    return strings.size();
   }
 }
 

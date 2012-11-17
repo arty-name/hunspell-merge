@@ -28,10 +28,10 @@ public class DictionaryFile extends File {
 
     affFile = extractAffFile();
     if (affFile != null) {
-    // Detect charset
-    affReader.setChartSetReader(true);
-    affReader.readFile(affFile, Charset.forName("UTF-8"));
-    affReader.setChartSetReader(false);
+      // Detect charset
+      affReader.setChartSetReader(true);
+      affReader.readFile(affFile, Charset.forName("UTF-8"));
+      affReader.setChartSetReader(false);
     }
 
     dicName = type.isArchive() ? ZipUtil.containsFile(getPath(), ".dic") : getPath();
@@ -97,5 +97,15 @@ public class DictionaryFile extends File {
   public void readFiles() {
     affReader.readFile(affFile, getCharset());
     dicReader.readFile(dicFile, getCharset());
+  }
+
+  public void clear() {
+    affReader.clear();
+    dicReader.clear();
+    System.gc();
+  }
+
+  public String getSummary() {
+    return getLaguageID() + " (" + getCharset() + ")";
   }
 }

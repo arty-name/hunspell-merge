@@ -44,4 +44,6 @@ public abstract class FileReader {
   public void setAbort(boolean abort) {
     this.abort = abort;
   }
+
+
 }

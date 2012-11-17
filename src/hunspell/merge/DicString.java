@@ -40,4 +40,8 @@ public class DicString {
   public boolean hasAffix(Affix affix) {
     return affixes.contains(affix);
   }
+
+  public int getAffixCount() {
+    return affixes != null ? affixes.size() : 0;
+  }
 }

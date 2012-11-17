@@ -1,0 +1,4 @@
+2012-11-17 v.1.1
++ Improved dictionary merging
++ Decreased memory usage
++ Added work log panel
