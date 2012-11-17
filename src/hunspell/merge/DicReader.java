@@ -33,11 +33,6 @@ public class DicReader extends FileReader {
     }
   }
 
-  @Override
-  protected void start() {
-
-  }
-
   public void setAffReader(AffReader affReader) {
     this.affReader = affReader;
   }
