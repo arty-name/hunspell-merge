@@ -39,7 +39,9 @@ public abstract class FileReader {
 
   abstract protected void readLine(String str);
 
-  abstract protected void start();
+  protected void start() {
+    setAbort(false);
+  }
 
   public void setAbort(boolean abort) {
     this.abort = abort;

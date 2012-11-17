@@ -57,7 +57,9 @@ public class AffReader extends FileReader {
     }
   }
 
-  public void start() {
+  @Override
+  protected void start() {
+    super.start();
     tryStr = "";
   }
 
