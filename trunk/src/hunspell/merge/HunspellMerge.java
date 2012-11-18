@@ -59,7 +59,7 @@ public class HunspellMerge extends JApplet {
 
     mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     mainFrame.setTitle("Hunspell dictionary merge" + (version != null ? " v." + version : ""));
-    mainFrame.setSize(500, 400);
+    mainFrame.setSize(500, 500);
     mainFrame.setLocationRelativeTo(null);
 
     createGUI();
@@ -76,8 +76,9 @@ public class HunspellMerge extends JApplet {
     if (files != null) {
       for (File file : files) {
         DictionaryFile dictionary = new DictionaryFile(file);
-        if (dictionary.isValid())
+        if (dictionary.isValid()) {
           dictionaries.add(dictionary);
+        }
       }
     }
     tableModel.fireTableDataChanged();
@@ -244,7 +245,7 @@ public class HunspellMerge extends JApplet {
     editOutputName.getDocument().addDocumentListener(new DocumentListener() {
 
       private void updateDescription() {
-        editOutputDescription.setText("Merged [" + editOutputName.getText() + "] dictionary");
+        editOutputDescription.setText("Merged " + editOutputName.getText() + " dictionary");
       }
 
       public void insertUpdate(DocumentEvent e) {
@@ -304,8 +305,9 @@ public class HunspellMerge extends JApplet {
   }
 
   private void createDictionaries() {
-    if (selectedDictionaries.size() == 0)
+    if (selectedDictionaries.size() == 0) {
       return;
+    }
 
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
@@ -332,7 +334,12 @@ public class HunspellMerge extends JApplet {
     for (DictionaryFile dictionary : selectedDictionaries) {
       log("Loading: " + dictionary.getName() + " / " + dictionary.getSummary() + " ...");
       dictionary.readFiles();
-      log("Merging " + dictionary.affReader.getAffCount() + " affixes ...");
+      if (dictionary.affReader.getAliasCount() > 0) {
+        log("Merging " + dictionary.affReader.getAliasCount() + " aliases ...");
+      }
+      log("Merging " + dictionary.affReader.getAffCount() + " affixes" +
+          (dictionary.affReader.getAliasCount() > 0 ? " (" + dictionary.affReader.getAliasCount() + " aliases)" : "")
+          + " ...");
       outAff.appendAff(dictionary.affReader);
       log("Merging " + dictionary.dicReader.getWordCount() + " words ...");
       outDic.appendDic(dictionary.dicReader);
@@ -345,27 +352,33 @@ public class HunspellMerge extends JApplet {
 
     FileUtil.createOutputFolder();
 
-    String outFolder = buttonOutPlain.isSelected() ? FileUtil.outputFolder :
-        FileUtil.makePath(FileUtil.tempFolder, "dictionaries");
+    String tmpFolder = buttonOutPlain.isSelected() ? FileUtil.outputFolder :
+        FileUtil.makePath(FileUtil.tempFolder, "output");
+
+    if (!buttonOutPlain.isSelected()) {
+      FileUtil.createFolder(tmpFolder);
+      FileUtil.deleteFolder(tmpFolder, false);
+    }
+
     String outFileName = FileUtil.validateFileName(editOutputName.getText().toLowerCase());
 
     try {
 
       log("Saving affix file: " + outFileName + ".aff");
-      outAff.saveToFile(outFolder + outFileName + ".aff", AffixFlag.NUMBER);
+      outAff.saveToFile(tmpFolder + outFileName + ".aff", AffixFlag.NUMBER);
       log("Saving dictionary file: " + outFileName + ".aff");
-      outDic.saveToFile(outFolder + outFileName + ".dic", AffixFlag.NUMBER);
+      outDic.saveToFile(tmpFolder + outFileName + ".dic", AffixFlag.NUMBER);
 
       if (buttonOutXPI.isSelected()) {
         String xpiName = outFileName.replace("_", "-");
         log("Create XPI: " + xpiName + ".xpi");
-        XPI.createXPI(xpiName, editOutputDescription.getText());
+        XPI.createXPI(tmpFolder, xpiName, outFileName, editOutputDescription.getText());
       }
 
       if (buttonOutZIP.isSelected()) {
         String zipName = outFileName.replace("_", "-") + ".zip";
         log("Create ZIP: " + zipName);
-        ZipUtil.zipFolder(FileUtil.outputFolder + zipName, outFolder);
+        ZipUtil.zipFolder(FileUtil.outputFolder + zipName, tmpFolder);
       }
 
       buttonCompile.setEnabled(true);
@@ -380,7 +393,12 @@ public class HunspellMerge extends JApplet {
       outAff.clear();
       outDic.clear();
 
-      JOptionPane.showMessageDialog(this, "Dictionaries were successfully merged!");
+      Object[] options = {"OK", "Open output folder"};
+      if (JOptionPane.showOptionDialog(null,
+          "Dictionaries were successfully merged!", "Information",
+          JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]) == 1) {
+        Desktop.getDesktop().open(new File(FileUtil.outputFolder));
+      }
     } catch (Exception e) {
       Util.showError(e);
     }
@@ -389,8 +407,9 @@ public class HunspellMerge extends JApplet {
   private void updateSelectedDictionaries() {
     selectedDictionaries.clear();
     for (int i = 0; i < dictionaries.size(); i++) {
-      if (table.isRowSelected(i))
+      if (table.isRowSelected(i)) {
         selectedDictionaries.add(dictionaries.elementAt(i));
+      }
     }
   }
 
@@ -405,8 +424,9 @@ public class HunspellMerge extends JApplet {
     String[] tokens = result.replace("-", "_").split("_");
     result = "";
     for (String token : tokens) {
-      if (!result.contains(token))
+      if (!result.contains(token)) {
         result += (result.equals("") ? "" : "_") + token;
+      }
     }
 
     editOutputName.setText(result);

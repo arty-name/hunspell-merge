@@ -14,10 +14,11 @@ public abstract class FileReader {
     try {
       FileInputStream inputStream = new FileInputStream(in);
       InputStreamReader inputReader;
-      if (cs == null)
+      if (cs == null) {
         inputReader = new InputStreamReader(inputStream);
-      else
+      } else {
         inputReader = new InputStreamReader(inputStream, cs);
+      }
 
       BufferedReader bufferedReader = new BufferedReader(inputReader);
       start();
@@ -35,6 +36,8 @@ public abstract class FileReader {
       }
     } catch (FileNotFoundException ignored) {
     }
+
+    end();
   }
 
   abstract protected void readLine(String str);
@@ -43,9 +46,11 @@ public abstract class FileReader {
     setAbort(false);
   }
 
+  protected void end() {
+
+  }
+
   public void setAbort(boolean abort) {
     this.abort = abort;
   }
-
-
 }

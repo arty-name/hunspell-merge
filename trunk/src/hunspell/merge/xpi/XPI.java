@@ -24,18 +24,22 @@ public class XPI {
     return sb.toString();
   }
 
-  private static void saveResource(String resourceName, String fileName, String description)
+  private static void saveResource(String tempFolder, String resourceName, String fileName, String description)
       throws IOException {
     String resource = readResource(resourceName);
     resource = resource.replace("[%Description%]", description).replace("[%FileName%]", fileName);
-    FileUtil.saveToFile(resource, FileUtil.tempFolder + resourceName, null);
+    FileUtil.saveToFile(resource, tempFolder + resourceName, null);
   }
 
-  public static void createXPI(String fileName, String description)
+  public static void createXPI(String tempFolder, String xpiFileName, String dicFileName, String description)
       throws IOException {
-    saveResource("install.rdf", fileName, description);
-    saveResource("install.js", fileName, description);
+    saveResource(tempFolder, "install.rdf", xpiFileName, description);
+    saveResource(tempFolder, "install.js", xpiFileName, description);
+    String dicFolder = FileUtil.makePath(tempFolder, "dictionaries");
+    FileUtil.createFolder(dicFolder);
+    FileUtil.renameFile(tempFolder + dicFileName + ".dic", dicFolder + dicFileName + ".dic");
+    FileUtil.renameFile(tempFolder + dicFileName + ".aff", dicFolder + dicFileName + ".aff");
 
-    ZipUtil.zipFolder(FileUtil.outputFolder + fileName + ".xpi", FileUtil.tempFolder);
+    ZipUtil.zipFolder(FileUtil.outputFolder + xpiFileName + ".xpi", tempFolder);
   }
 }

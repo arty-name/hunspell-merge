@@ -2,31 +2,32 @@
 
 package hunspell.merge;
 
-import java.util.Vector;
-
-public class DicString {
+public class DicString extends HashData {
 
   private String value;
-  private Vector<Affix> affixes;
+  private final HashDataVector<Affix> affixes = new HashDataVector<Affix>();
 
-  public DicString(String value, Vector<Affix> affixes) {
+  public DicString(String value, HashDataVector<Affix> affixes) {
     this.value = value;
-    this.affixes = affixes;
+    addAffixes(affixes);
   }
 
-  private String getAffixes(AffixFlag flag) {
-    if (!hasAffixes())
+  private String getAffixesString(AffixFlag flag) {
+    if (!hasAffixes()) {
       return "";
+    }
 
     String result = "";
-    for (Affix affix : affixes) {
-      result += ((!result.equals("") && (flag == AffixFlag.NUMBER)) ? "," : "") + affix.name;
+    for (Affix affix : affixes.values()) {
+      if (affix.hasLines()) {
+        result += ((!result.equals("") && (flag == AffixFlag.NUMBER)) ? "," : "") + affix.getName();
+      }
     }
     return result.equals("") ? "" : "/" + result;
   }
 
   public String toString(AffixFlag flag) {
-    return value + getAffixes(flag);
+    return value + getAffixesString(flag);
   }
 
   public String getValue() {
@@ -41,7 +42,18 @@ public class DicString {
     return affixes.contains(affix);
   }
 
-  public int getAffixCount() {
-    return affixes != null ? affixes.size() : 0;
+  public HashDataVector<Affix> getAffixes() {
+    return affixes;
+  }
+
+  public void addAffixes(HashDataVector<Affix> newAffixes) {
+    if (newAffixes != null) {
+      affixes.addAll(newAffixes);
+    }
+  }
+
+  @Override
+  public String getHashString() {
+    return value;
   }
 }

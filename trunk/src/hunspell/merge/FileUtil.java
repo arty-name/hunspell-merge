@@ -20,15 +20,16 @@ public class FileUtil {
 
   public static void saveToFile(String buffer, String outputFileName, String outputEncoding)
       throws IOException {
-      createFolder(new File(outputFileName).getParent());
-      FileOutputStream outputStream = new FileOutputStream(outputFileName);
-      Writer out;
-      if (outputEncoding == null)
-        out = new OutputStreamWriter(outputStream);
-      else
-        out = new OutputStreamWriter(outputStream, outputEncoding);
-      out.write(buffer);
-      out.close();
+    createFolder(new File(outputFileName).getParent());
+    FileOutputStream outputStream = new FileOutputStream(outputFileName);
+    Writer out;
+    if (outputEncoding == null) {
+      out = new OutputStreamWriter(outputStream);
+    } else {
+      out = new OutputStreamWriter(outputStream, outputEncoding);
+    }
+    out.write(buffer);
+    out.close();
   }
 
   public static boolean createFolder(String folderName) {
@@ -41,15 +42,16 @@ public class FileUtil {
 
   public static boolean deleteRecursive(File folderName, boolean deleteFolder) {
 
-    if (!folderName.exists())
+    if (!folderName.exists()) {
       return true;
+    }
     boolean ret = true;
     if (folderName.isDirectory()) {
       for (File f : folderName.listFiles()) {
         ret = ret && deleteRecursive(f, true);
       }
     }
-    return ret && (!deleteFolder ||  folderName.delete());
+    return ret && (!deleteFolder || folderName.delete());
   }
 
   public static boolean delete(String fileName) {
@@ -86,8 +88,9 @@ public class FileUtil {
     return folder.listFiles(new FilenameFilter() {
       public boolean accept(File dir, String filename) {
         for (String e : ext) {
-          if (filename.toLowerCase().endsWith(e))
+          if (filename.toLowerCase().endsWith(e)) {
             return true;
+          }
         }
         return false;
       }
@@ -105,5 +108,9 @@ public class FileUtil {
 
   public static void createOutputFolder() {
     createFolder(outputFolder);
+  }
+
+  public static boolean renameFile(String from, String to) {
+    return new File(from).renameTo(new File(to));
   }
 }
