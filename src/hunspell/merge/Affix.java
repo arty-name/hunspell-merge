@@ -2,90 +2,121 @@
 
 package hunspell.merge;
 
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Affix {
+public class Affix extends HashData {
 
-  public String type = "";
-  public String name = "";
-  public String cross = "";
-  private static Pattern header = Pattern.compile("(\\w\\w\\w) (\\w+) *([Y|N])* *\\d+");
-  public Vector<String> lines = new Vector<String>();
+  private AffixType type = AffixType.UNKNOWN;
+  private String name = "";
+  private String crossFlag = "";
+  private HashVector<String> lines = new HashVector<String>();
 
-  public boolean isReplace() {
-    return type.equals("REP");
-  }
+  private static Pattern namePattern = Pattern.compile("\\w+ (\\w+).*");
+  private static Pattern crossPattern = Pattern.compile("\\w+ \\w+ ([Y|N]).*");
 
-  public static boolean isValid(String str) {
-    return str.startsWith("SFX") ||
-        str.startsWith("PFX") ||
-        str.startsWith("REP");
-  }
-
-  public static boolean isGroupHeader(String str) {
-    return isValid(str) && header.matcher(str).matches();
-  }
-
-  public void readLine(String str) {
+  public void readLine(String str, boolean isHeader) {
     str = str.trim();
-    if (str.equals(""))
+    if (str.equals("")) {
       return;
-    Matcher matcher = header.matcher(str);
-    if (matcher.matches()) {
-      type = matcher.group(1);
-
-      if (isReplace()) {
-        name = "REP";
-      } else {
-        if (matcher.groupCount() > 1)
-          name = matcher.group(2);
-
-        if (matcher.groupCount() > 2)
-          cross = matcher.group(3);
-      }
-    } else if (isValid(str)) {
-
-      lines.add(str);
     }
+
+    if (isHeader) {
+      type = AffixType.parseType(str);
+      if (type.isNamedAffix()) {
+        name = parseName(str, type.getName());
+      } else {
+        name = type.getName();
+      }
+      if (type.isCrossAffix()) {
+        crossFlag = parseCrossFlag(str);
+      }
+    } else {
+      String value = str.replace(type.name() + " " + (type.isNamedAffix() ? name + " " : ""), "");
+      lines.add(value, value);
+    }
+  }
+
+  public String parseName(String str, String defaultName) {
+    Matcher matcher = namePattern.matcher(str);
+    if (matcher.matches()) {
+      return matcher.group(1);
+    }
+    return defaultName;
+  }
+
+  public String parseCrossFlag(String str) {
+    Matcher matcher = crossPattern.matcher(str);
+    if (matcher.matches()) {
+      return matcher.group(1);
+    }
+    return "";
   }
 
   public String toString() {
     StringBuilder buffer = new StringBuilder();
-    buffer.append(type);
 
-    if (!isReplace()) {
-      if (!(name == null) && (!name.equals("")))
-        buffer.append(" ").append(name);
+    String prefix = type.getName();
 
-      if (!(cross == null) && (!cross.equals("")))
-        buffer.append(" ").append(cross);
+    if (type.isNamedAffix()) {
+      if (!(name == null) && (!name.equals(""))) {
+        prefix += " " + name;
+      }
+
+      buffer.append(prefix);
+
+      if (!(crossFlag == null) && (!crossFlag.equals(""))) {
+        buffer.append(" ").append(crossFlag);
+      }
+    } else {
+      buffer.append(prefix);
     }
 
     buffer.append(" ").append(lines.size()).append(Util.LINE_BREAK);
 
-    for (String line : lines) {
-      buffer.append(line).append(Util.LINE_BREAK);
+    for (String value : lines.values) {
+      buffer.append(prefix).append(" ").append(value).append(Util.LINE_BREAK);
     }
 
     return buffer.toString();
   }
 
   public void setName(String newName) {
-
-    Vector<String> newLines = new Vector<String>();
-    for (String line : lines) {
-      newLines.add(line.replace(type + " " + name, type + " " + newName));
-    }
-
-    lines = newLines;
     name = newName;
   }
 
-  public void appendAffixes(Affix affix) {
-    for (String line : affix.lines) {
-      lines.add(line);
+  public String getName() {
+    return name;
+  }
+
+  public AffixType getType() {
+    return type;
+  }
+
+  public void appendValues(Affix affix) {
+    for (String value : affix.lines.values) {
+      if (!lines.contains(value)) {
+        lines.add(value, value);
+      }
+    }
+  }
+
+  @Override
+  public String getHashString() {
+    return name;
+  }
+
+  public boolean hasLines() {
+    return !lines.isEmpty();
+  }
+
+  public HashVector<String> getLines() {
+    return lines;
+  }
+
+  public void removeDuplicate(String line) {
+    if (lines.contains(line)) {
+      lines.remove(line);
     }
   }
 }
