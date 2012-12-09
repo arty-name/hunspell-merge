@@ -10,6 +10,8 @@ public class DicReader extends FileReader {
 
   private AffReader affReader;
   private HashDataVector<DicString> strings = new HashDataVector<DicString>();
+  private boolean wordReader;
+  private int wordsCount = 0;
 
   public void addString(DicString string) {
     strings.add(string);
@@ -17,11 +19,22 @@ public class DicReader extends FileReader {
 
   @Override
   protected void readLine(String str) {
+    if ((str.matches("\\d+")) && isWordReader()) {
+      wordsCount = Integer.parseInt(str.trim());
+      setAbort(true);
+      return;
+    }
+
     str = str.trim().replace("\t", "/");
 
     if (!str.equals("") && (!str.matches("\\d+"))) {
       String[] strs = str.split("/");
-      addString(new DicString(strs[0], strs.length == 1 ? null : affReader.findAffixes(strs[1])));
+      if (!strs[0].matches("\\d+")) {
+        if (!isWordReader())
+          addString(new DicString(strs[0], strs.length == 1 ? null : affReader.findAffixes(strs[1])));
+        else
+          wordsCount++;
+      }
     }
   }
 
@@ -35,7 +48,8 @@ public class DicReader extends FileReader {
     StringBuilder buffer = new StringBuilder();
     buffer.append(strings.size()).append(Util.LINE_BREAK);
     for (DicString str : strings.values()) {
-      buffer.append(str.toString(flag)).append(Util.LINE_BREAK);
+      String string = str.toString(flag);
+      buffer.append(string).append(Util.LINE_BREAK);
     }
     FileUtil.saveToFile(buffer.toString(), fileName, "UTF-8");
     buffer.setLength(0);
@@ -76,6 +90,24 @@ public class DicReader extends FileReader {
 
   public HashDataVector<DicString> getStrings() {
     return strings;
+  }
+
+  public void setWordReader(boolean wordReader) {
+    this.wordReader = wordReader;
+    if (wordReader)
+      setWordsCount(0);
+  }
+
+  public boolean isWordReader() {
+    return wordReader;
+  }
+
+  public int getWordsCount() {
+    return wordsCount;
+  }
+
+  public void setWordsCount(int wordsCount) {
+    this.wordsCount = wordsCount;
   }
 }
 

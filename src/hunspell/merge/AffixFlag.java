@@ -4,8 +4,8 @@ package hunspell.merge;
 
 public enum AffixFlag {
   SINGLE(""),
-  LONG("long"),
-  NUMBER("num");
+  LONG("LONG"),
+  NUMBER("NUMBER");
 
   private String name;
 
@@ -23,5 +23,9 @@ public enum AffixFlag {
 
   private boolean compare(String name) {
     return this.name.equalsIgnoreCase(name);
+  }
+
+  public String getName() {
+    return name;
   }
 }
