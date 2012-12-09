@@ -9,6 +9,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import java.awt.*;
@@ -52,14 +53,12 @@ public class HunspellMerge extends JApplet {
 
   public HunspellMerge() {
     instance = this;
-
     String version = HunspellMerge.class.getPackage().getSpecificationVersion();
 
     mainFrame = new JFrame();
-
     mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     mainFrame.setTitle("Hunspell dictionary merge" + (version != null ? " v." + version : ""));
-    mainFrame.setSize(500, 500);
+    mainFrame.setSize(600, 500);
     mainFrame.setLocationRelativeTo(null);
 
     createGUI();
@@ -151,6 +150,10 @@ public class HunspellMerge extends JApplet {
 
     // Dictionary list
     scrollPane.setBorder(BorderFactory.createTitledBorder("Available dictionaries (Select one or more)"));
+
+    DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+    rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+    table.getColumnModel().getColumn(DictionaryTableModel.COLUMN_WORDS).setCellRenderer(rightRenderer);
     table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         updateSelectedDictionaries();

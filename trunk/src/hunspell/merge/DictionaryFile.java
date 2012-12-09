@@ -5,6 +5,8 @@ package hunspell.merge;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class DictionaryFile extends File {
 
@@ -16,6 +18,7 @@ public class DictionaryFile extends File {
   private final File dicFile;
   public AffReader affReader = new AffReader();
   public DicReader dicReader = new DicReader();
+  private NumberFormat wordFormat = new DecimalFormat("#,###");
 
   public DictionaryFile(File file) {
     super(file.getPath());
@@ -39,6 +42,13 @@ public class DictionaryFile extends File {
       dicName = new File(dicName).getName();
     dicFile = extractDicFile();
     dicReader.setAffReader(affReader);
+
+    if (dicFile != null) {
+      // Detect words count
+      dicReader.setWordReader(true);
+      dicReader.readFile(dicFile, getCharset());
+      dicReader.setWordReader(false);
+    }
 
     if (isValid())
       laguageID = FileUtil.changeFileExt(dicName, "");
@@ -88,6 +98,10 @@ public class DictionaryFile extends File {
 
   public Charset getCharset() {
     return affReader.getCharset();
+  }
+
+  public String getWordsCount() {
+    return wordFormat.format(dicReader.getWordsCount());
   }
 
   public DictionaryType getType() {

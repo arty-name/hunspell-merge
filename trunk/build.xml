@@ -1,7 +1,7 @@
 ﻿<project name="hunspellmerge" default="build.run" basedir=".">
 	<!-- $Id: build.xml 4735 2012-10-25 07:17:02Z maltsev $ -->
 
-	<property name="version" value="1.3"/>
+	<property name="version" value="1.4"/>
 	<property name="dir.bin" value=".bin"/>
 	<property name="dir.src" value="src"/>
 	<property name="dir.temp" value=".tmp"/>
@@ -14,7 +14,7 @@
 		<delete dir="${dir.bin}"/>
 	</target>
 
-	<target name="sign" description="Sighs jar">
+	<target name="sign" description="Signs jar">
 		<signjar jar="${jar.path}"
 						 alias="hunspellmerge"
 						 storepass="hunspellmerge"

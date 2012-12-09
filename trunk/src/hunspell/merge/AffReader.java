@@ -160,9 +160,9 @@ public class AffReader extends FileReader {
     StringBuilder buffer = new StringBuilder();
     buffer.append("SET UTF-8").append(Util.LINE_BREAK);
     buffer.append("TRY ").append(Util.sortString(tryStr)).append(Util.LINE_BREAK);
-    if (flag != AffixFlag.SINGLE) {
-      buffer.append("FLAG ").append(flag.name()).append(Util.LINE_BREAK);
-    }
+    if (flag != AffixFlag.SINGLE)
+      buffer.append("FLAG ").append(flag.getName()).append(Util.LINE_BREAK);
+
     buffer.append(Util.LINE_BREAK);
 
     for (Affix affix : affixes.values()) {

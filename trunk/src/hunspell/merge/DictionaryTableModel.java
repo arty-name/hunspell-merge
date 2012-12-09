@@ -7,9 +7,10 @@ import java.util.Vector;
 
 public class DictionaryTableModel extends AbstractTableModel {
 
-  private static final int COLUMN_NAME = 0;
-  private static final int COLUMN_TYPE = 1;
-  private static final int COLUMN_ENCODING = 2;
+  public static final int COLUMN_NAME = 0;
+  public static final int COLUMN_TYPE = 1;
+  public static final int COLUMN_WORDS = 2;
+  public static final int COLUMN_ENCODING = 3;
 
   private String[] columnNames;
   private Vector<DictionaryFile> data;
@@ -19,6 +20,7 @@ public class DictionaryTableModel extends AbstractTableModel {
     columnNames = new String[] {
         "Name",
         "Type",
+        "Words",
         "Language (Encoding)"};
   }
 
@@ -35,15 +37,21 @@ public class DictionaryTableModel extends AbstractTableModel {
     return data.size();
   }
 
+  private String prepare(String text) {
+    return " " + text + " ";
+  }
+
   public Object getValueAt(int row, int col) {
     DictionaryFile file = data.elementAt(row);
     switch (col) {
       case COLUMN_NAME:
-        return file.getName();
+        return prepare(file.getName());
       case COLUMN_TYPE:
-        return file.getType().getName();
+        return prepare(file.getType().getName());
+      case COLUMN_WORDS:
+        return prepare(file.getWordsCount());
       case COLUMN_ENCODING:
-        return file.getSummary();
+        return prepare(file.getSummary());
     }
     return null;
   }
