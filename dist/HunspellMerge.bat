@@ -1,0 +1,1 @@
+java -Xmx1024m -cp HunspellMerge.jar hunspell.merge.HunspellMerge

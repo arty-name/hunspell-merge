@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for Hunspell Merge Application -->
+<jnlp
+  spec="6.0+"
+  codebase="http://hunspell-merge.googlecode.com/files/"
+  href="HunspellMerge.jnlp">
+  <information>
+    <title>Hunspell Merge Application</title>
+    <vendor>Sergio Barbery</vendor>
+    <homepage href="https://code.google.com/p/hunspell-merge"/>
+    <description>Hunspell Merge Application</description>
+    <description kind="short">Software for merging several hunspell dictionaries.</description>
+    <icon href="HunspellMerge.jpg"/>
+    <icon kind="splash" href="HunspellMerge.jpg"/>
+    <offline-allowed/> 
+    <shortcut online="false">
+      <desktop/>
+    </shortcut>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <j2se version="1.6+" java-vm-args="-esa -Xnoclassgc"/>
+    <jar href="HunspellMerge.jar"/>
+  </resources>
+  <application-desc main-class="hunspell.merge.HunspellMerge"/>
+</jnlp> 
