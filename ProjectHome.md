@@ -1,0 +1,1 @@
+Software for merging several hunspell dictionaries.
