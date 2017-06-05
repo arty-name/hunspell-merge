@@ -105,12 +105,12 @@ public class HunspellMerge extends JApplet {
     panelLog.add(buttonClearLog, BorderLayout.SOUTH);
     buttonClearLog.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        ñlearLog();
+        clearLog();
       }
     });
   }
 
-  private void ñlearLog() {
+  private void clearLog() {
     textAreaLog.setText("");
   }
 
